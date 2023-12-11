@@ -48,7 +48,7 @@ impl MsDoc<Docx> for Docx {
         let mut buf = Vec::new();
         let mut txt = Vec::new();
 
-        if xml_data.len() > 0 {
+        if !xml_data.is_empty() {
             let mut to_read = false;
             loop {
                 match xml_reader.read_event_into(&mut buf) {

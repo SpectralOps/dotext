@@ -50,7 +50,7 @@ impl MsDoc<Xlsx> for Xlsx {
         let mut buf = Vec::new();
         let mut txt = Vec::new();
 
-        if xml_data.len() > 0 {
+        if !xml_data.is_empty() {
             let mut to_read = false;
             let mut xml_reader = Reader::from_str(xml_data.as_ref());
             loop {
