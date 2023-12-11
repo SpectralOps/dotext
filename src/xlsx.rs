@@ -1,4 +1,4 @@
-use zip::ZipArchive;
+use zip::read::ZipArchive;
 
 use xml::events::Event;
 use xml::reader::Reader;
@@ -34,7 +34,6 @@ impl MsDoc<Xlsx> for Xlsx {
         let mut archive = ZipArchive::new(file)?;
 
         let mut xml_data = String::new();
-        //        let xml_data_list = Vec::new();
 
         for i in 0..archive.len() {
             let mut c_file = archive.by_index(i).unwrap();
@@ -55,8 +54,8 @@ impl MsDoc<Xlsx> for Xlsx {
             let mut to_read = false;
             let mut xml_reader = Reader::from_str(xml_data.as_ref());
             loop {
-                match xml_reader.read_event(&mut buf) {
-                    Ok(Event::Start(ref e)) => match e.name() {
+                match xml_reader.read_event_into(&mut buf) {
+                    Ok(Event::Start(ref e)) => match e.name().into_inner() {
                         b"t" => {
                             to_read = true;
                             txt.push("\n".to_string());
@@ -69,7 +68,7 @@ impl MsDoc<Xlsx> for Xlsx {
                     },
                     Ok(Event::Text(e)) => {
                         if to_read {
-                            let text = e.unescape_and_decode(&xml_reader).unwrap();
+                            let text = e.unescape().unwrap().to_string();
                             txt.push(text);
                             to_read = false;
                         }
